@@ -1,0 +1,14 @@
+import{a as L,S,i as n}from"./assets/vendor-C24jorn_.js";(function(){const r=document.createElement("link").relList;if(r&&r.supports&&r.supports("modulepreload"))return;for(const e of document.querySelectorAll('link[rel="modulepreload"]'))s(e);new MutationObserver(e=>{for(const t of e)if(t.type==="childList")for(const i of t.addedNodes)i.tagName==="LINK"&&i.rel==="modulepreload"&&s(i)}).observe(document,{childList:!0,subtree:!0});function a(e){const t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),e.crossOrigin==="use-credentials"?t.credentials="include":e.crossOrigin==="anonymous"?t.credentials="omit":t.credentials="same-origin",t}function s(e){if(e.ep)return;e.ep=!0;const t=a(e);fetch(e.href,t)}})();const w="49078032-cb7d53c2015160b8e7ee9b72b",q="https://pixabay.com/api/";async function y(o,r=1,a=40){try{return(await L.get(q,{params:{key:w,q:o,image_type:"photo",orientation:"horizontal",safesearch:!0,page:r,per_page:a}})).data}catch(s){throw console.error("Error",s),s}}function m(o,r=!1){const a=document.querySelector(".gallery"),s=o.map(({webformatURL:t,largeImageURL:i,tags:g,likes:p,views:f,comments:h,downloads:b})=>`
+<li class="gallery-item">
+    <a href="${i}">
+        <img src="${t}" alt="${g}" loading="lazy" />
+    </a>
+    <div class="info">
+        <p data-label="Likes">${p}</p>
+        <p data-label="Views">${f}</p>
+        <p data-label="Comments">${h}</p>
+        <p data-label="Downloads">${b}</p>
+    </div>
+</li>
+`).join("");r?a.insertAdjacentHTML("beforeend",s):a.innerHTML=s,new S(".gallery a").refresh()}const E=document.querySelector(".search-form"),v=document.querySelector(".gallery"),d=document.querySelector(".load-more"),u=document.querySelector(".loading-message");let l=1,c="";E.addEventListener("submit",async o=>{if(o.preventDefault(),c=o.target.elements.searchQuery.value.trim(),l=1,v.innerHTML="",d.style.display="none",u.style.display="block",!c){n.error({message:"Sorry, there are no images matching your search query. Please, try again!",messageColor:"#fafafb",color:"#EF4040",position:"topRight",maxWidth:"432px"});return}try{const r=await y(c,l);if(u.style.display="none",!r.hits.length){n.warning({message:"Sorry, there are no images matching your search query. Please, try again!",messageColor:"#fafafb",color:"#EF4040",position:"topRight",maxWidth:"432px"});return}m(r.hits),r.totalHits>10&&(d.style.display="block")}catch{n.error({message:"Error"})}});d.addEventListener("click",async()=>{l+=1,u.style.display="block";try{const o=await y(c,l);m(o.hits,!0),u.style.display="none",l*10>=o.totalHits&&(d.style.display="none",n.info({message:"You've reached the end of search results."}));const{height:r}=document.querySelector(".gallery-item").getBoundingClientRect();window.scrollBy({top:r*2,behavior:"smooth"})}catch{n.error({message:"Error"})}});
+//# sourceMappingURL=index.js.map
