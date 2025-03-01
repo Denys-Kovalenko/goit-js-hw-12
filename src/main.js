@@ -23,13 +23,13 @@ form.addEventListener('submit', async event => {
 
   if (!currentQuery) {
     iziToast.error({
-      message:
-        'Sorry, there are no images matching your search query. Please, try again!',
+      message: 'Enter a search query!',
       messageColor: '#fafafb',
       color: '#EF4040',
       position: 'topRight',
       maxWidth: '432px',
     });
+    loadingMessage.style.display = 'none';
     return;
   }
 
@@ -39,8 +39,7 @@ form.addEventListener('submit', async event => {
 
     if (!images.hits.length) {
       iziToast.warning({
-        message:
-          'Sorry, there are no images matching your search query. Please, try again!',
+        message: 'No images found. Try another search!',
         messageColor: '#fafafb',
         color: '#EF4040',
         position: 'topRight',
@@ -50,11 +49,13 @@ form.addEventListener('submit', async event => {
     }
 
     renderGallery(images.hits);
-    if (images.totalHits > 10) {
+
+    if (images.hits.length === 40) {
       loadMoreBtn.style.display = 'block';
     }
   } catch (error) {
-    iziToast.error({ message: 'Error' });
+    iziToast.error({ message: 'Something went wrong!' });
+    loadingMessage.style.display = 'none';
   }
 });
 
@@ -64,10 +65,17 @@ loadMoreBtn.addEventListener('click', async () => {
 
   try {
     const images = await fetchImages(currentQuery, currentPage);
-    renderGallery(images.hits, true);
     loadingMessage.style.display = 'none';
 
-    if (currentPage * 10 >= images.totalHits) {
+    if (!images.hits.length) {
+      loadMoreBtn.style.display = 'none';
+      iziToast.info({ message: "You've reached the end of search results." });
+      return;
+    }
+
+    renderGallery(images.hits, true);
+
+    if (images.hits.length < 40) {
       loadMoreBtn.style.display = 'none';
       iziToast.info({ message: "You've reached the end of search results." });
     }
@@ -77,6 +85,7 @@ loadMoreBtn.addEventListener('click', async () => {
       .getBoundingClientRect();
     window.scrollBy({ top: height * 2, behavior: 'smooth' });
   } catch (error) {
-    iziToast.error({ message: 'Error' });
+    iziToast.error({ message: 'Something went wrong!' });
+    loadingMessage.style.display = 'none';
   }
 });
