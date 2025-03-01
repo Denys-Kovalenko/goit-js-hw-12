@@ -23,13 +23,13 @@ form.addEventListener('submit', async event => {
 
   if (!currentQuery) {
     iziToast.error({
-      message: 'Enter a search query!',
+      message:
+        'Sorry, there are no images matching your search query. Please, try again!',
       messageColor: '#fafafb',
       color: '#EF4040',
       position: 'topRight',
       maxWidth: '432px',
     });
-    loadingMessage.style.display = 'none';
     return;
   }
 
@@ -39,7 +39,8 @@ form.addEventListener('submit', async event => {
 
     if (!images.hits.length) {
       iziToast.warning({
-        message: 'No images found. Try another search!',
+        message:
+          'Sorry, there are no images matching your search query. Please, try again!',
         messageColor: '#fafafb',
         color: '#EF4040',
         position: 'topRight',
@@ -54,7 +55,7 @@ form.addEventListener('submit', async event => {
       loadMoreBtn.style.display = 'block';
     }
   } catch (error) {
-    iziToast.error({ message: 'Something went wrong!' });
+    iziToast.error({ message: 'Error' });
     loadingMessage.style.display = 'none';
   }
 });
@@ -65,19 +66,18 @@ loadMoreBtn.addEventListener('click', async () => {
 
   try {
     const images = await fetchImages(currentQuery, currentPage);
+    renderGallery(images.hits, true);
     loadingMessage.style.display = 'none';
 
     if (!images.hits.length) {
       loadMoreBtn.style.display = 'none';
-      iziToast.info({ message: "You've reached the end of search results." });
-      return;
-    }
-
-    renderGallery(images.hits, true);
-
-    if (images.hits.length < 40) {
-      loadMoreBtn.style.display = 'none';
-      iziToast.info({ message: "You've reached the end of search results." });
+      iziToast.info({
+        message: "We're sorry, but you've reached the end of search results.",
+        messageColor: '#fafafb',
+        color: '#EF4040',
+        position: 'topRight',
+        maxWidth: '432px',
+      });
     }
 
     const { height } = document
@@ -85,7 +85,6 @@ loadMoreBtn.addEventListener('click', async () => {
       .getBoundingClientRect();
     window.scrollBy({ top: height * 2, behavior: 'smooth' });
   } catch (error) {
-    iziToast.error({ message: 'Something went wrong!' });
-    loadingMessage.style.display = 'none';
+    iziToast.error({ message: 'Error' });
   }
 });
